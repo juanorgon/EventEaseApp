@@ -1,0 +1,2 @@
+I started the project by opening a chat with Copilot and prompting the requirements listed in the activity. Copilot suggested the project structure, some components, and how to start—from the command line to where to place the files.
+For the advanced features, I used the integrated Copilot plugin in Visual Studio. I simply instructed it to create the components by describing their functionality, and Copilot generated the code in seconds. Then, I asked for optimization, validation, and error handling for edge cases.
