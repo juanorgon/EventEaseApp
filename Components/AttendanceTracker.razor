@@ -1,0 +1,64 @@
+@using System.Collections.Generic
+
+@code {
+    [Parameter]
+    public List<EventParticipation> Events { get; set; } = new();
+
+    private void ToggleAttendance(EventParticipation evt)
+    {
+        evt.Attended = !evt.Attended;
+    }
+}
+
+<h3>Attendance Tracker</h3>
+
+@if (Events == null || !Events.Any())
+{
+    <p>No events to track.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Date</th>
+                <th>Attended</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var evt in Events)
+            {
+                <tr>
+                    <td>@evt.Name</td>
+                    <td>@evt.Date.ToShortDateString()</td>
+                    <td>
+                        @if (evt.Attended)
+                        {
+                            <span class="text-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">No</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" @onclick="() => ToggleAttendance(evt)">
+                            Toggle
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public class EventParticipation
+    {
+        public string Name { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public bool Attended { get; set; }
+    }
+}

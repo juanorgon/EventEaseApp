@@ -1,0 +1,77 @@
+<PageTitle>Event Card</PageTitle>
+<h3>Event Details</h3>
+
+<a href="/register">Register for this event</a>
+
+<div class="event-card">
+    <h3>@EventName</h3>
+    <p>Date: @EventDate</p>
+    <p>Location: @EventLocation</p>
+    <button @onclick="ToggleEditMode">Edit</button>
+</div>
+
+@if (isEditing)
+{
+    <div class="edit-form">
+        <h4>Edit Event</h4>
+        <label>
+            Name:
+            <input @bind="EventName" />
+            @if (string.IsNullOrWhiteSpace(EventName))
+            {
+                <span class="error">Name is required.</span>
+            }
+        </label>
+        <label>
+            Date:
+            <input type="datetime-local" @bind="EventDate" />
+            @if (EventDate < DateTime.Now)
+            {
+                <span class="error">Date must be in the future.</span>
+            }
+        </label>
+        <label>
+            Location:
+            <input @bind="EventLocation" />
+            @if (string.IsNullOrWhiteSpace(EventLocation))
+            {
+                <span class="error">Location is required.</span>
+            }
+        </label>
+        <button @onclick="SaveChanges" disabled="@(!IsFormValid)">Save</button>
+        <button @onclick="CancelEdit">Cancel</button>
+    </div>
+}
+
+@code {
+    private bool isEditing = false;
+
+    private void ToggleEditMode()
+    {
+        isEditing = !isEditing;
+    }
+
+    private void SaveChanges()
+    {
+        if (IsFormValid)
+        {
+            isEditing = false;
+            // Additional logic to save changes can be added here
+        }
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        // Additional logic to revert changes can be added here
+    }
+
+    private bool IsFormValid => 
+        !string.IsNullOrWhiteSpace(EventName) &&
+        EventDate >= DateTime.Now &&
+        !string.IsNullOrWhiteSpace(EventLocation);
+
+    [Parameter] public string EventName { get; set; }
+    [Parameter] public DateTime EventDate { get; set; }
+    [Parameter] public string EventLocation { get; set; }
+}

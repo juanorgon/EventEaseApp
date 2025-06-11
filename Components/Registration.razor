@@ -1,0 +1,87 @@
+@page "/register/{eventId}"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+
+<EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Event ID</label>
+        <InputText class="form-control" Value="@(registrationModel.EventId)" Disabled="true" />
+        @if (invalidEventId)
+        {
+            <div class="text-danger">Invalid Event ID. Please check and try again.</div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <InputText id="name" class="form-control" @bind-Value="registrationModel.Name" />
+        <ValidationMessage For="@(() => registrationModel.Name)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="registrationModel.Email" />
+        <ValidationMessage For="@(() => registrationModel.Email)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success mt-3">@successMessage</div>
+}
+
+@code {
+    [Parameter]
+    public string? eventId { get; set; }
+
+    private RegistrationModel registrationModel = new();
+    private bool invalidEventId = false;
+    private string? successMessage;
+
+    protected override void OnParametersSet()
+    {
+        registrationModel.EventId = eventId;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        invalidEventId = false;
+        successMessage = null;
+
+        if (!await IsValidEventId(registrationModel.EventId))
+        {
+            invalidEventId = true;
+            return;
+        }
+
+        // Simulate registration logic (replace with real logic)
+        // await RegisterUserAsync(registrationModel);
+
+        successMessage = "Registration successful!";
+        registrationModel = new RegistrationModel { EventId = eventId };
+    }
+
+    private Task<bool> IsValidEventId(string? eventId)
+    {
+        return Task.FromResult(!string.IsNullOrWhiteSpace(eventId) && eventId.All(char.IsDigit) && eventId.Length == 5);
+    }
+
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "Event ID is required")]
+        public string? EventId { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name is too long")]
+        public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string? Email { get; set; }
+    }
+}
